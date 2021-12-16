@@ -1,0 +1,16 @@
+{
+  "resources": [
+    {
+      "name": "trust_mode",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-2:816286866474:function:PodcastDemoFlorin-dev-trust_mode"
+    },
+    {
+      "name": "fetch_item",
+      "resource_type": "lambda_function",
+      "lambda_arn": "arn:aws:lambda:us-east-2:816286866474:function:PodcastDemoFlorin-dev-fetch_item"
+    }
+  ],
+  "schema_version": "2.0",
+  "backend": "api"
+}
