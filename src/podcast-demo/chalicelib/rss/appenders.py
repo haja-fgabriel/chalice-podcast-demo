@@ -4,14 +4,14 @@ from memory_profiler import profile
 
 from . import *
 
-from concurrent.futures import ThreadPoolExecutor
+from threading import Thread
 from datetime import timedelta
 import itertools
 import json
 from typing import List
 
 from .fetchers import *
-from .writers import RSSFeedS3Writer
+from .writers import RSSFeedS3Writer, extract_content_and_write_item
 
 
 @profile
@@ -39,17 +39,14 @@ def run_trust_mode(feed_url, previous_date, current_date, prefix):
 
     print(f"Number of articles: {len(filtered_items)}")
     print(filtered_items)
+
     if filtered_items:
-        with ThreadPoolExecutor(30) as executor:
-            for future in itertools.chain(
-                [executor.submit(RSSFeedS3Writer().write, parsed_old_rss, s3_path)],
-                executor.map(
-                    lambda item: invoke_lambda(
-                        "PodcastDemoFlorin-dev-fetch_item",
-                        json.dumps({"item": item, "prefix": s3_path}, cls=DateWithTimezoneEncoder),
-                        invoke_async=True,
-                    ),
-                    dict_filtered_items,
-                ),
-            ):
-                print(future)
+        write_thread = Thread(target=RSSFeedS3Writer().write, args=(parsed_old_rss, s3_path))
+        write_thread.start()
+        for item in dict_filtered_items:
+            invoke_lambda(
+                "PodcastDemoFlorin-dev-fetch_item",
+                json.dumps({"item": item, "prefix": s3_path}, cls=DateWithTimezoneEncoder),
+                invoke_async=True,
+            )
+        write_thread.join()

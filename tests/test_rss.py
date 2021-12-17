@@ -15,10 +15,8 @@ from chalicelib.content_utils import *
 from chalicelib.rss.writers import *
 from chalicelib.rss.parsers import *
 from chalicelib.rss.fetchers import *
-from chalicelib.rss.builders import *
 from chalicelib.rss import *
 from chalicelib.rss.appenders import *
-from chalicelib.rss.comparison import *
 
 # from dates import
 
@@ -183,7 +181,7 @@ def test_parse_json_feed(sample_feed_json):
         assert item.title
 
 
-@pytest.mark.skip
+# @pytest.mark.skip
 def test_fetch_feed_trust_mode(prefix, encoded_feed_url, publisher_url):
     s3_path = f"{prefix}/{encoded_feed_url}"
     old_feed = get_feed_from_s3(s3_path)
@@ -314,7 +312,7 @@ def feed_contains_all_items(feed, feed_prefix_verification):
 
 def test_write_item(sample_item, prefix):
     s3_path = f"{prefix}_items"
-    write_item(sample_item, s3_path)
+    extract_content_and_write_item(sample_item, s3_path)
     print(f"{s3_path}/{sample_item.encoded_link}/assets/audio/{sample_item.content.content_hash}/content")
     assert sample_item.content
     metadata = get_metadata(f"{s3_path}/{sample_item.encoded_link}")

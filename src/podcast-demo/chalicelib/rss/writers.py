@@ -53,6 +53,6 @@ class RSSFeedS3Writer:
             json.dump(dict_feed, g, cls=DateWithTimezoneEncoder)
 
 
-def write_item(item, prefix):
+def extract_content_and_write_item(item, prefix):
     item.content = extract_content(item.link)
     RSSItemS3Writer().write(item, prefix)

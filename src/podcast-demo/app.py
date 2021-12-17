@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 from chalice import Chalice
-from chalice.app import NotFoundError
-from chalicelib.rss.comparison import compare_feeds
 
 from memory_profiler import profile
 
+from chalicelib.rss import RSSItem
 from chalicelib.rss.appenders import run_trust_mode
-from chalicelib.rss.sqs_messages import *
+from chalicelib.rss.writers import extract_content_and_write_item
 
 app = Chalice(app_name="rss-poc")
 
@@ -25,7 +24,7 @@ def trust_mode(event, context):
 @app.lambda_function()
 def fetch_item(event, context):
     event["item"]["published"] = datetime.fromisoformat(event["item"]["published"])
-    write_item(RSSItem(**event["item"]), event["prefix"])
+    extract_content_and_write_item(RSSItem(**event["item"]), event["prefix"])
     return event
     pass
 
